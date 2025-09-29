@@ -1,0 +1,24 @@
+{
+  "name": "awos-test-dummy",
+  "version": "0.0.0-develop",
+  "description": "A dummy npm package for testing release workflow",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pvl/awos-test.git"
+  },
+  "keywords": [
+    "test",
+    "dummy",
+    "workflow"
+  ],
+  "author": "Test Author",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pvl/awos-test/issues"
+  },
+  "homepage": "https://github.com/pvl/awos-test#readme"
+}
