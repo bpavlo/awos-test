@@ -1,3 +1,4 @@
+
 name: Manual Release
 
 on:
@@ -20,35 +21,60 @@ jobs:
           node-version: '16'
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Get latest release tag and increment patch version
-        id: get_version
-        run: |
-          git fetch --tags
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "Latest tag: $latest_tag"
-          new_version=$(echo $latest_tag | awk -F. -v OFS=. '{$NF++;print}')
-          echo "New version: $new_version"
-          echo "::set-output name=new_version::$new_version"
+      - name: Get release draft info
+        id: get_release_draft
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            
+            const draft = releases.find(release => release.draft === true);
+            if (!draft) {
+              core.setFailed('No draft release found. Please create a draft release first.');
+              return;
+            }
+            
+            const tagName = draft.tag_name;
+            const version = tagName.replace(/^v/, '');
+            
+            core.setOutput('draft_id', draft.id);
+            core.setOutput('tag_name', tagName);
+            core.setOutput('version', version);
+            core.setOutput('release_body', draft.body);
+            
+            console.log(`Found draft release: ${tagName}`);
+            console.log(`Draft ID: ${draft.id}`);
+            console.log(`Version: ${version}`);
 
       - name: Update package.json version
-        run: npm version ${{ steps.get_version.outputs.new_version }} --no-git-tag-version
+        run: npm version ${{ steps.get_release_draft.outputs.version }} --no-git-tag-version
 
       - name: Install dependencies
         run: npm install
 
-      - name: Publish to npm (dry run)
-        run: npm publish --dry-run
+      - name: Publish to npm
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       - name: Create git tag
         run: |
-          git tag ${{ steps.get_version.outputs.new_version }}
-          git push origin ${{ steps.get_version.outputs.new_version }}
+          git tag ${{ steps.get_release_draft.outputs.tag_name }}
+          git push origin ${{ steps.get_release_draft.outputs.tag_name }}
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - name: Publish Release (convert draft to published)
+        uses: actions/github-script@v6
         with:
-          tag_name: ${{ steps.get_version.outputs.new_version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: '${{ steps.get_release_draft.outputs.draft_id }}',
+              draft: false
+            });
+            
+            console.log('Successfully published release ${{ steps.get_release_draft.outputs.tag_name }}');
+
