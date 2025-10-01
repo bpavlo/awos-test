@@ -3,3 +3,4 @@ function hello() {
 }
 
 module.exports = hello;console.log('Release-please test feature');
+// Test release-as functionality
