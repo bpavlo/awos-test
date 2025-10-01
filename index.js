@@ -2,4 +2,4 @@ function hello() {
   return 'Hello from awos-test-dummy package!';
 }
 
-module.exports = hello;
+module.exports = hello;console.log('Release-please test feature');
