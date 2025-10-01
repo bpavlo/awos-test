@@ -20,7 +20,7 @@
     "dummy",
     "workflow"
   ],
-  "author": "Test Author",
+  "author": "Test Author <test@example.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/pvl/awos-test/issues"
