@@ -32,6 +32,10 @@
     "url": "https://github.com/pvl/awos-test/issues"
   },
   "homepage": "https://github.com/pvl/awos-test#readme",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/pvl"
+  },
   "dependencies": {
     "axios": "^1.12.2"
   },
