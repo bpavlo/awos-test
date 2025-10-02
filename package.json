@@ -1,7 +1,7 @@
 {
   "name": "awos-test-dummy",
   "version": "0.0.4",
-  "description": "A dummy npm package for testing release workflow with automated releases",
+  "description": "A dummy npm package for testing release workflow with automated releases.",
   "main": "dist/index.js",
   "bin": {
     "weather": "dist/index.js"
